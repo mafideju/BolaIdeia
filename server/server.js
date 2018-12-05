@@ -28,11 +28,40 @@ app.use((req, res, next) => {
 });
 
 io.on('connection', (socket) => {
+  console.warn('Usuario Conectado')
+
+  socket.emit('newMessage', {
+    from: 'John',
+    text: 'Te Vejo Mais Tarde',
+    createdAt: 20181205
+  })
+
+  socket.on('createMessage', message => {
+    console.log('Conexão - ', message)
+  })
+
   socket.on('disconnect', () => {
-    console.log('DOWN')
+    console.log('SERVER DOWN')
   })
 });
+
 
 server.listen(port, () => {
   console.log(`Servidor Rodando na Porta ${port}`)
 })
+
+
+
+
+// io.on('connection', socket => {
+//   socket.emit('message', {
+//     from: 'server@side.com',
+//     text: 'Teste de conexão',
+//     createdAt: 20180512
+//   })
+
+
+//   socket.on('disconnect', () => {
+//     console.log('SERVER DOWN')
+//   })
+// })
