@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server/server.js",
     "vai": "nodemon server/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha server/**/*.test.js",
+    "auto-test": "nodemon --exec \"npm test\""
   },
   "engines": {
     "node": "8.12.0"
@@ -27,7 +28,11 @@
   },
   "homepage": "https://github.com/mafideju/BolaIdeia#readme",
   "dependencies": {
+    "expect": "^23.6.0",
     "express": "^4.16.4",
+    "jquery": "^3.3.1",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.8",
     "socket.io": "^2.2.0"
   }
 }

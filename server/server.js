@@ -8,6 +8,7 @@ const http = require('http');
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
+const { generateMessage } = require('./utils/message');
 
 const port = process.env.PORT || 7001;
 
@@ -26,18 +27,20 @@ app.use((req, res, next) => {
   })
   next();
 });
-
+// ...newMessage => server/client
+// createMessage => client/server
 io.on('connection', (socket) => {
   console.warn('Usuario Conectado');
 
-  socket.on('createMessage', message => {
+  socket.emit('newMessage', generateMessage('Admin', 'Seja Bem Vind@ ao Bola Idéia'));
+
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'Nov@ Usuári@ Entrou'))
+
+  socket.on('createMessage', (message, callback) => {
     console.log('Conexão - ', message);
 
-    io.emit('newMessage', {
-      from: message.from,
-      text: message.text,
-      createdAt: new Date().getTime()
-    })
+    io.emit('newMessage', generateMessage(message.from, message.text));
+    callback('Isto Vem do Servidor');
   })
 
   socket.on('disconnect', () => {
