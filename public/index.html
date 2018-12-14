@@ -6,21 +6,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Bola Idéia</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
-<body>
-  <h1>Bola Idéia</h1>
+<body class="chat">
+  <!-- <h1>Bola Idéia</h1> -->
 
-  <ol id="messages"></ol>
+  <div class="chat__sidebar">
+    <h3>Conectados</h3>
+    <div id="users"></div>
+  </div>
 
-  <form id="message-form">
-    <input type="text" name="message" placeholder="Digite a Mensagem...">
-    <button>Enviar</button>
-  </form>
+  <div class="chat__main">
 
-  <button id="send-location">Local</button>
+    <ul id="messages" class="chat-messages"></ul>
+    <div class="chat__footer">
+      <form id="message-form">
+        <input type="text" name="message" placeholder="Digite a Mensagem..." autofocus autocomplete="on">
+        <button>Enviar</button>
+      </form>
+      <button id="send-location">Local</button>
+    </div>
+  </div>
 
   <script src="socket.io/socket.io.js"></script>
+  <script src="js/libs/moment.js"></script>
   <script src="js/libs/jquery.js"></script>
   <script src="js/index.js"></script>
 </body>

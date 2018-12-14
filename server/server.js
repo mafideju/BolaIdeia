@@ -27,6 +27,10 @@ app.use((req, res, next) => {
   })
   next();
 });
+
+const hora = new Date().getHours();
+const minuto = new Date().getMinutes();
+const horarioAtual = `${new Date().toDateString()} ${hora}:${minuto}`;
 // ...newMessage => server/client
 // createMessage => client/server
 io.on('connection', (socket) => {
@@ -34,13 +38,13 @@ io.on('connection', (socket) => {
 
   socket.emit('newMessage', generateMessage('Admin', 'Seja Bem Vind@ ao Bola Idéia'));
 
-  socket.broadcast.emit('newMessage', generateMessage('Admin', 'Nov@ Usuári@ Entrou'))
+  socket.broadcast.emit('newMessage', generateMessage('Admin', `Nov@ Usuári@ Entrou em ${horarioAtual}`))
 
   socket.on('createMessage', (message, callback) => {
     console.log('Conexão - ', message);
 
     io.emit('newMessage', generateMessage(message.from, message.text));
-    callback('Isto Vem do Servidor');
+    callback();
   });
 
   socket.on('createLocationMessage', coords => {
