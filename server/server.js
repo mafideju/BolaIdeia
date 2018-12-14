@@ -8,7 +8,7 @@ const http = require('http');
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
-const { generateMessage } = require('./utils/message');
+const { generateMessage, generateLocationMessage } = require('./utils/message');
 
 const port = process.env.PORT || 7001;
 
@@ -41,13 +41,19 @@ io.on('connection', (socket) => {
 
     io.emit('newMessage', generateMessage(message.from, message.text));
     callback('Isto Vem do Servidor');
+  });
+
+  socket.on('createLocationMessage', coords => {
+    io.emit('newLocationMessage', generateLocationMessage(`Admin`, coords.latitude, coords.longitude))
   })
 
   socket.on('disconnect', () => {
-    console.log('SERVER DOWN');
+    console.error('SERVER DOWN');
   })
 });
 
 server.listen(port, () => {
   console.log(`Servidor Rodando na Porta ${port}`);
 })
+
+// https://www.google.com/maps?q=-23.728362699999998,-46.5329492

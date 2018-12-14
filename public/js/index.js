@@ -17,6 +17,17 @@ socket.on('newMessage', (message) => {
   jQuery('#messages').append(li);
 });
 
+socket.on('newLocationMessage', (message) => {
+  var li = jQuery('<li></li>')
+  var a = jQuery('<a target="_blank">Local Atual</a>')
+
+  li.text(`${message.from}: `)
+  a.attr('href', message.url)
+  li.append(a)
+
+  jQuery('#messages').append(li);
+});
+
 jQuery('#message-form').on('submit', function (e) {
   e.preventDefault();
 
@@ -25,5 +36,21 @@ jQuery('#message-form').on('submit', function (e) {
     text: jQuery('[name=message]').val()
   }, function () {
 
+  })
+})
+
+var locationButton = jQuery('#send-location');
+locationButton.on('click', () => {
+  if (!navigator.geolocation) {
+    return alert('Geolocation Não é Suportada por este Browser');
+  }
+
+  navigator.geolocation.getCurrentPosition(position => {
+    socket.emit('createLocationMessage', {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude
+    })
+  }, () => {
+    alert('Não rolou buscar a localização pelo Geolocation API');
   })
 })
