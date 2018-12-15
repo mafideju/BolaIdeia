@@ -1,5 +1,27 @@
 var socket = io();
 
+// const scrollToBottom = () => {
+//   var messages = jQuery('#messages');
+//   var newMessage = messages.children('li:last-child');
+
+//   var clientHeight = messages.prop('clientHeight');
+//   var scrollTop = messages.prop('scrollTop');
+//   var scrollHeight = messages.prop('scrollHeight');
+//   var newMessageHeight = newMessage.innerHeight();
+//   var lastMessageHeight = newMessage.prev().innerHeight();
+
+//   if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+//     console.log('SCROLL TA RUIM')
+//     // console.log("clientHeight", clientHeight)
+//     // console.log("scrollTop", scrollTop)
+//     // console.log('scrollHeight', scrollHeight)
+//     // console.log('newMessageHeight', newMessageHeight)
+//     // console.log('lastMessageHeight', lastMessageHeight)
+//     //
+//     messages.scrollTop(scrollHeight);
+//   }
+// }
+
 socket.on('connect', () => {
   console.log('Connectado ao Servidor')
 
@@ -10,24 +32,28 @@ socket.on('disconnect', () => {
 
 socket.on('newMessage', (message) => {
   var formattedTime = moment(message.createdAt).format('HH:mm');
-
-  var li = jQuery('<li></li>')
-  li.text(`${message.from} as ${formattedTime} diz: ${message.text}`)
-
-  jQuery('#messages').append(li);
+  var template = jQuery('#message-template').html();
+  var html = Mustache.render(template, {
+    from: message.from,
+    text: message.text,
+    createdAt: formattedTime
+  });
+  jQuery('#messages').append(html);
+  // scrollToBottom();
 });
 
 socket.on('newLocationMessage', (message) => {
   var formattedTime = moment(message.createdAt).format('DD/MM/YYYY HH:mm');
+  var template = jQuery('#location-message-template').html();
 
-  var li = jQuery('<li></li>')
-  var a = jQuery(`<a target="_blank">Local Atual</a><span> em ${formattedTime} horas.</span>`)
+  var html = Mustache.render(template, {
+    from: message.from,
+    url: message.url,
+    createdAt: formattedTime
+  });
 
-  li.text(`${message.from}: `)
-  a.attr('href', message.url)
-  li.append(a)
-
-  jQuery('#messages').append(li);
+  jQuery('#messages').append(html);
+  // scrollToBottom();
 });
 
 jQuery('#message-form').on('submit', function (e) {
