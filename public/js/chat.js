@@ -1,9 +1,8 @@
 var socket = io();
 
-function scrollToBottom() {
+const scrollToBottom = () => {
   var messages = jQuery('#messages');
   var newMessage = messages.children('li:last-child');
-
   var clientHeight = messages.prop('clientHeight');
   var scrollTop = messages.prop('scrollTop');
   var scrollHeight = messages.prop('scrollHeight');
@@ -11,13 +10,6 @@ function scrollToBottom() {
   var lastMessageHeight = newMessage.prev().innerHeight();
 
   if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
-    console.log('SCROLL TA RUIM')
-    // console.log("clientHeight", clientHeight)
-    // console.log("scrollTop", scrollTop)
-    // console.log('scrollHeight', scrollHeight)
-    // console.log('newMessageHeight', newMessageHeight)
-    // console.log('lastMessageHeight', lastMessageHeight)
-    //
     messages.scrollTop(scrollHeight);
   }
 }
@@ -38,6 +30,17 @@ socket.on('disconnect', () => {
   console.log('Desconectado ao Servidor')
 });
 
+
+
+socket.on('updateUserList', (users) => {
+  var ol = jQuery('<ol></ol>');
+
+  users.forEach(user => {
+    ol.append(jQuery('<li></li>').text(user));
+  });
+
+  jQuery('#users').html(ol);
+})
 
 socket.on('newMessage', (message) => {
   var formattedTime = moment(message.createdAt).format('HH:mm');
@@ -72,7 +75,6 @@ jQuery('#message-form').on('submit', function (e) {
 
   if (messageTextBox !== '' || !messageTextBox) {
     socket.emit('createMessage', {
-      from: 'User',
       text: messageTextBox.val()
     }, function () {
       messageTextBox.val('')

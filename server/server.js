@@ -6,12 +6,14 @@ const path = require('path');
 const fs = require('fs');
 const http = require('http');
 
+const { generateMessage, generateLocationMessage } = require('./utils/message');
+const { isRealString } = require('./utils/validator');
+const { Users } = require('./utils/users');
+
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
-
-const { generateMessage, generateLocationMessage } = require('./utils/message');
-const { isRealString } = require('./utils/validator');
+var users = new Users();
 
 const port = process.env.PORT || 7001;
 
@@ -43,10 +45,14 @@ io.on('connection', (socket) => {
   // CONFIRMA SE É UMA STRING
   socket.on('join', (params, callback) => {
     if (!isRealString(params.name) || !isRealString(params.room)) {
-      callback('Nome de Exibição e Nome da Sala são obrigatórios para seu ingresso no BolaIdeia')
+      return callback('Nome de Exibição e Nome da Sala são obrigatórios para seu ingresso no BolaIdeia')
     }
     socket.join(params.room);
 
+    users.removeUser(socket.id);
+    users.addUser(socket.id, params.name, params.room);
+
+    io.to(params.room).emit('updateUserList', users.getUserList(params.room));
     socket.emit('newMessage', generateMessage('Admin', 'Seja Bem Vind@ ao Bola Idéia'));
     socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} entrou ás ${formattedTime}`));
 
@@ -54,16 +60,30 @@ io.on('connection', (socket) => {
   });
 
   socket.on('createMessage', (message, callback) => {
-    io.emit('newMessage', generateMessage(message.from, message.text));
+    var user = users.getUser(socket.id);
+
+    if (user && isRealString(message.text)) {
+      io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+    }
+
     callback();
   });
 
   socket.on('createLocationMessage', coords => {
-    io.emit('newLocationMessage', generateLocationMessage(`Admin`, coords.latitude, coords.longitude))
+    var user = users.getUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude))
+    }
   })
 
   socket.on('disconnect', () => {
-    console.error('SERVER DOWN');
+    var user = users.removeUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+      io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} saiu da sala...`));
+    }
   })
 });
 
