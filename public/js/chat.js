@@ -23,12 +23,21 @@ function scrollToBottom() {
 }
 
 socket.on('connect', () => {
-  console.log('Connectado ao Servidor')
+  var params = jQuery.deparam(window.location.search);
 
+  socket.emit('join', params, err => {
+    if (err) {
+      window.location.href = '/';
+      alert(err);
+    } else {
+      console.log('OK')
+    }
+  });
 });
 socket.on('disconnect', () => {
   console.log('Desconectado ao Servidor')
 });
+
 
 socket.on('newMessage', (message) => {
   var formattedTime = moment(message.createdAt).format('HH:mm');

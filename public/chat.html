@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Bola Idéia</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="chat">
+  <!-- <h1>Bola Idéia</h1> -->
+
+  <div class="chat__sidebar">
+    <h3>Conectados</h3>
+    <div id="users"></div>
+  </div>
+
+  <div class="chat__main">
+
+    <ul id="messages" class="chat__messages"></ul>
+    <div class="chat__footer">
+      <form id="message-form">
+        <input type="text" name="message" placeholder="Digite a Mensagem..." autofocus autocomplete="on">
+        <button>Enviar</button>
+      </form>
+      <button id="send-location">Local</button>
+    </div>
+  </div>
+
+  <script id="message-template" type="text/template">
+    <li class="message">
+      <div class="message__title">
+        <h4>{{ from }}</h4>
+        <span>{{ createdAt }}</span>
+      </div>
+      <div class="message_body">
+        <p>{{ text }}</p>
+      </div>
+    </li>
+  </script>
+
+  <script id="location-message-template" type="text/template">
+    <li class="message">
+      <div class="message__title">
+        <h4>{{ from }}</h4>
+        <span>{{ createdAt }}</span>
+      </div>
+      <div class="message_body">
+        <p>
+          <a href="{{ url }}" target="_blank">Posição Atual</a>
+        </p>
+      </div>
+    </li>
+  </script>
+
+  <script src="socket.io/socket.io.js"></script>
+  <script src="js/libs/mustache.js"></script>
+  <script src="js/libs/moment.js"></script>
+  <script src="js/libs/jquery.js"></script>
+  <script src="js/libs/deparam.js"></script>
+  <script src="js/chat.js"></script>
+</body>
+
+</html>
